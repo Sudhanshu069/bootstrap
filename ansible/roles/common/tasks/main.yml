@@ -1,0 +1,37 @@
+---
+- name: Validate supported operating systems
+  ansible.builtin.assert:
+    that:
+      - ansible_system in ["Darwin", "Linux"]
+    fail_msg: "This starter only supports macOS and Linux."
+
+- name: Note macOS package management in starter repo
+  ansible.builtin.debug:
+    msg: >-
+      macOS packages are managed via Brewfile at the repo root.
+      The bootstrap script runs brew bundle before this playbook.
+  when: ansible_system == "Darwin"
+
+- name: Install common packages on Arch-based Linux
+  become: true
+  ansible.builtin.package:
+    name:
+      - git
+      - zsh
+      - kitty
+      - tmux
+      - starship
+      - neovim
+    state: present
+  when:
+    - ansible_system == "Linux"
+    - ansible_os_family == "Archlinux"
+
+- name: Note unsupported Linux package manager in starter repo
+  ansible.builtin.debug:
+    msg: >-
+      Package installation is only mapped for Arch-based systems in this starter.
+      Add a distro-specific task block before relying on Ansible for packages here.
+  when:
+    - ansible_system == "Linux"
+    - ansible_os_family != "Archlinux"

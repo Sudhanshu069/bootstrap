@@ -1,0 +1,76 @@
+# =========================================================
+# .zshrc
+# Plain zsh + Homebrew plugins, no Oh My Zsh
+# =========================================================
+
+# -------------------------
+# Environment
+# -------------------------
+export EDITOR="nvim"
+export NVM_DIR="$HOME/.nvm"
+
+# -------------------------
+# PATH
+# -------------------------
+typeset -U path PATH
+path=(
+  "$HOME/.local/bin"
+  "/opt/homebrew/opt/llvm/bin"
+  "/opt/homebrew/opt/libpq/bin"
+  $path
+)
+
+if [[ -x /usr/libexec/java_home ]]; then
+  export JAVA_HOME="$("/usr/libexec/java_home")"
+  path=("$JAVA_HOME/bin" $path)
+fi
+
+export PATH
+
+# -------------------------
+# Completions
+# -------------------------
+if command -v brew >/dev/null 2>&1; then
+  BREW_PREFIX="$(brew --prefix)"
+  fpath=(
+    "$BREW_PREFIX/share/zsh-completions"
+    "$BREW_PREFIX/share/zsh/site-functions"
+    "$HOME/.docker/completions"
+    $fpath
+  )
+fi
+
+autoload -Uz compinit
+compinit
+
+# -------------------------
+# Prompt / shell tools
+# -------------------------
+eval "$(starship init zsh)"
+eval "$(fzf --zsh)"
+eval "$(zoxide init zsh)"
+
+# -------------------------
+# Autosuggestions
+# Keep near the end
+# -------------------------
+if [[ -f "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+  source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+fi
+
+# -------------------------
+# Optional completions
+# -------------------------
+if command -v ngrok >/dev/null 2>&1; then
+  eval "$(ngrok completion)"
+fi
+
+# -------------------------
+# NVM (kept late)
+# -------------------------
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+
+eval "$(atuin init zsh)"
+
+alias ls='eza --group-directories-first --icons=auto'

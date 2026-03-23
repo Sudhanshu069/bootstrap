@@ -1,0 +1,6 @@
+---
+- name: Bootstrap local machine
+  hosts: local
+  gather_facts: true
+  roles:
+    - common
