@@ -15,7 +15,7 @@ install_macos_prereqs() {
     eval "$(/usr/local/bin/brew shellenv)"
   fi
 
-  brew install ansible chezmoi
+  brew install chezmoi
 
   if [ -f "${ROOT_DIR}/Brewfile" ]; then
     brew bundle --file "${ROOT_DIR}/Brewfile"
@@ -33,11 +33,7 @@ install_linux_prereqs() {
 }
 
 run_ansible() {
-  if [ "$(uname -s)" = "Darwin" ]; then
-    ansible-playbook -i "${ROOT_DIR}/ansible/inventory/localhost.yml" "${ROOT_DIR}/ansible/site.yml"
-  else
-    ansible-playbook -i "${ROOT_DIR}/ansible/inventory/localhost.yml" "${ROOT_DIR}/ansible/site.yml" --ask-become-pass
-  fi
+  ansible-playbook -i "${ROOT_DIR}/ansible/inventory/localhost.yml" "${ROOT_DIR}/ansible/site.yml" --ask-become-pass
 }
 
 apply_chezmoi() {
@@ -69,7 +65,14 @@ case "$(uname -s)" in
     ;;
 esac
 
-run_ansible
+if [ "$(uname -s)" != "Darwin" ]; then
+  run_ansible
+fi
 apply_chezmoi
+
+if [ ! -d "${HOME}/.tmux/plugins/tpm" ]; then
+  git clone https://github.com/tmux-plugins/tpm "${HOME}/.tmux/plugins/tpm"
+fi
+
 apply_wallpaper
 apply_macos_defaults

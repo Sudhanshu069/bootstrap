@@ -10,13 +10,20 @@ export EDITOR="nvim"
 export NVM_DIR="$HOME/.nvm"
 
 # -------------------------
+# Homebrew prefix (used for PATH, completions, plugins)
+# -------------------------
+if command -v brew >/dev/null 2>&1; then
+  BREW_PREFIX="$(brew --prefix)"
+fi
+
+# -------------------------
 # PATH
 # -------------------------
 typeset -U path PATH
 path=(
   "$HOME/.local/bin"
-  "/opt/homebrew/opt/llvm/bin"
-  "/opt/homebrew/opt/libpq/bin"
+  ${BREW_PREFIX:+"$BREW_PREFIX/opt/llvm/bin"}
+  ${BREW_PREFIX:+"$BREW_PREFIX/opt/libpq/bin"}
   $path
 )
 
@@ -30,8 +37,7 @@ export PATH
 # -------------------------
 # Completions
 # -------------------------
-if command -v brew >/dev/null 2>&1; then
-  BREW_PREFIX="$(brew --prefix)"
+if [[ -n "${BREW_PREFIX:-}" ]]; then
   fpath=(
     "$BREW_PREFIX/share/zsh-completions"
     "$BREW_PREFIX/share/zsh/site-functions"
@@ -54,8 +60,8 @@ eval "$(zoxide init zsh)"
 # Autosuggestions
 # Keep near the end
 # -------------------------
-if [[ -f "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
-  source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+if [[ -n "${BREW_PREFIX:-}" && -f "${BREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+  source "${BREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 fi
 
 # -------------------------

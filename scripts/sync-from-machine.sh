@@ -69,6 +69,9 @@ copy_if_exists() {
 sync_configs() {
   copy_if_exists "${HOME}/.zshrc" "${ROOT_DIR}/chezmoi/dot_zshrc"
   copy_if_exists "${HOME}/.config/kitty/kitty.conf" "${ROOT_DIR}/chezmoi/dot_config/kitty/kitty.conf"
+  copy_if_exists "${HOME}/.config/kitty/themes.conf" "${ROOT_DIR}/chezmoi/dot_config/kitty/themes.conf"
+  copy_if_exists "${HOME}/.config/kitty/current-theme.conf" "${ROOT_DIR}/chezmoi/dot_config/kitty/current-theme.conf"
+  copy_if_exists "${HOME}/.config/kitty/overrides.conf" "${ROOT_DIR}/chezmoi/dot_config/kitty/overrides.conf"
   copy_if_exists "${HOME}/.tmux.conf" "${ROOT_DIR}/chezmoi/dot_tmux.conf"
   copy_if_exists "${HOME}/.config/starship.toml" "${ROOT_DIR}/chezmoi/dot_config/starship.toml"
 
@@ -88,7 +91,6 @@ sync_configs() {
       --exclude='LICENSE.md' \
       --exclude='doc' \
       --exclude='.gitignore' \
-      --exclude='.stylua.toml' \
       "${nvim_source}/" "${ROOT_DIR}/chezmoi/dot_config/nvim/"
   else
     echo "Skipping missing Neovim config: ~/.config/nvim or ~/.config/nvim-kickstart"
@@ -119,8 +121,7 @@ sync_wallpapers() {
   fi
 
   mkdir -p "${wallpaper_target}"
-  find "${wallpaper_target}" -maxdepth 1 -type f ! -name '.gitkeep' -delete
-  rsync -a "${wallpaper_source}/" "${wallpaper_target}/"
+  rsync -a --delete --exclude='.gitkeep' "${wallpaper_source}/" "${wallpaper_target}/"
 }
 
 if [ "${SYNC_CONFIGS}" = true ]; then

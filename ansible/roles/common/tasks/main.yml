@@ -2,15 +2,8 @@
 - name: Validate supported operating systems
   ansible.builtin.assert:
     that:
-      - ansible_system in ["Darwin", "Linux"]
-    fail_msg: "This starter only supports macOS and Linux."
-
-- name: Note macOS package management in starter repo
-  ansible.builtin.debug:
-    msg: >-
-      macOS packages are managed via Brewfile at the repo root.
-      The bootstrap script runs brew bundle before this playbook.
-  when: ansible_system == "Darwin"
+      - ansible_system == "Linux"
+    fail_msg: "This playbook only runs on Linux. macOS uses Brewfile instead."
 
 - name: Install common packages on Arch-based Linux
   become: true
@@ -22,6 +15,12 @@
       - tmux
       - starship
       - neovim
+      - fzf
+      - zoxide
+      - atuin
+      - eza
+      - ripgrep
+      - fd
     state: present
   when:
     - ansible_system == "Linux"
